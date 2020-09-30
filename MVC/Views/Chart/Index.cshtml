@@ -1,0 +1,108 @@
+﻿
+@{
+    Layout = null;
+}
+
+<html>
+<head>
+    <meta name="viewport" content="width=device-width" />
+    <title>Google Chart in ASP.NET Core MVC</title>
+
+    <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+    <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
+    <script>
+
+        $(document).ready(function () {
+
+            $.ajax({
+                type: 'GET',
+                dataType: "json",
+                contentType: "application/json",
+                url: '/api/chart/ChartCadastroByBairro',
+                success: function (result) {
+                    google.charts.load('current', {
+                        'packages': ['corechart']
+                    });
+                    google.charts.setOnLoadCallback(function () {
+                        drawChartPie(result);
+                    });
+                }
+            });
+
+            function drawChartPie(result) {
+
+                var data = new google.visualization.DataTable();
+                data.addColumn('string', 'Id');
+                data.addColumn('number', 'Valor');
+                var dataArray = [];
+                $.each(result, function (i, obj) {
+                    dataArray.push([obj.id, obj.valor]);
+                });
+
+                data.addRows(dataArray);
+
+                var piechart_options = {
+                    title: 'Gráfico Pizza - Visão Bairro',
+                    width: 400,
+                    height: 300
+                };
+                var piechart = new google.visualization.PieChart(document
+                    .getElementById('piechart_div'));
+                piechart.draw(data, piechart_options);
+            }
+
+            $.ajax({
+                type: 'GET',
+                dataType: "json",
+                contentType: "application/json",
+                url: '/api/chart/ChartFaturamentoByDataReferencia',
+                success: function (result) {
+                    google.charts.load('current', {
+                        'packages': ['corechart']
+                    });
+                    google.charts.setOnLoadCallback(function () {
+                        drawChartBar(result);
+                    });
+                }
+            });
+
+            function drawChartBar(result) {
+
+                var data = new google.visualization.DataTable();
+                data.addColumn('string', 'Id');
+                data.addColumn('number', 'Valor');
+                var dataArray = [];
+                $.each(result, function (i, obj) {
+                    dataArray.push([obj.id, obj.valor]);
+                });
+
+                data.addRows(dataArray);
+
+                var barchart_options = {
+                    title: 'Gráfico Barra - Visão  Consumo por Data Referencia',
+                    width: 400,
+                    height: 300,
+                    legend: 'none'
+                };
+                var barchart = new google.visualization.BarChart(document
+                    .getElementById('barchart_div'));
+                barchart.draw(data, barchart_options);
+            }
+
+        });
+
+    </script>
+
+</head>
+<body>
+
+    <h3>Google Chart in ASP.NET Core MVC</h3>
+    <table class="columns">
+        <tr>
+            <td><div id="piechart_div" style="border: 1px solid #ccc"></div></td>
+            <td><div id="barchart_div" style="border: 1px solid #ccc"></div></td>
+        </tr>
+    </table>
+
+</body>
+</html>
